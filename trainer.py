@@ -66,9 +66,17 @@ class Trainer:
     optimD = optim.Adam([{'params':self.FE.parameters()}, {'params':self.D.parameters()}], lr=0.0002, betas=(0.5, 0.99))
     optimG = optim.Adam([{'params':self.G.parameters()}, {'params':self.Q.parameters()}], lr=0.0002, betas=(0.5, 0.99))
 
-    dataset = dset.CIFAR10('./cifar_dataset', transform=transforms.Compose([ transforms.CenterCrop(self.opt.imageSize) ,  transforms.ToTensor()]), download=True)
+    #dataset = dset.CIFAR10('./cifar_dataset', transform=transforms.Compose([ transforms.CenterCrop(self.opt.imageSize) ,  transforms.ToTensor()]), download=True)
     #dataset= dset.FashionMNIST('./fashion_dataset', transform=transforms.ToTensor(), download=True)
-    #dataset= dset.MNIST('./dataset', transform=transforms.ToTensor(),download=True)
+    dataset= dset.MNIST('./dataset', transform=transforms.ToTensor(),download=True)
+    #dataset = dset.ImageFolder(root=self.opt.dataroot,
+    #                           transform=transforms.Compose([
+    #                               transforms.Scale(self.opt.imageSize),
+    #                               transforms.CenterCrop(self.opt.imageSize),
+    #                               transforms.ToTensor(),
+    #                               transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
+    #                           ]))
+
     dataloader = DataLoader(dataset, batch_size=self.batch_size, shuffle=True, num_workers=1)
 
     # fixed random variables
@@ -94,6 +102,8 @@ class Trainer:
         x, _ = batch_data
 
         bs = x.size(0)
+        if bs != self.opt.batchSize:
+            continue
         real_x.data.resize_(x.size())
         label.data.resize_(bs)
         dis_c.data.resize_(bs, self.opt.ndiscrete)

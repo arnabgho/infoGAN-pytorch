@@ -49,7 +49,8 @@ parser.add_argument('--netG', default='', help="path to netG (to continue traini
 parser.add_argument('--netD', default='', help="path to netD (to continue training)")
 parser.add_argument('--outf', default='./conv_gated_resnet_resnet_gen/', help='folder to output images and model checkpoints')
 parser.add_argument('--manualSeed', type=int,default=7, help='manual seed')
-parser.add_argument('--dataset', type=str, default='1d', help='which dataset')
+parser.add_argument('--dataset', required=True, help='cifar10 | lsun | imagenet | folder | lfw | fake')
+parser.add_argument('--dataroot', required=True, help='path to dataset')
 opt = parser.parse_args()
 opt.nsalient=opt.ncontinuous + opt.ndiscrete
 opt.nz = opt.nnoise+opt.ndiscrete+opt.ncontinuous

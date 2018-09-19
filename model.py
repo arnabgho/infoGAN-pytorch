@@ -1,6 +1,6 @@
 import torch.nn as nn
 from common_net import *
-
+from torch.nn.utils import spectral_norm
 class FrontEnd(nn.Module):
   ''' front end part of discriminator and Q'''
 
@@ -8,12 +8,15 @@ class FrontEnd(nn.Module):
     super(FrontEnd, self).__init__()
 
     self.main = nn.Sequential(
-      nn.Conv2d(opt.nc, 64, 4, 2, 1),
+      #nn.Conv2d(opt.nc, 64, 4, 2, 1),
+      spectral_norm(nn.Conv2d(opt.nc, 64, 4, 2, 1)),
       nn.LeakyReLU(0.1, inplace=True),
-      nn.Conv2d(64, 128, 4, 2, 1, bias=False),
+      #nn.Conv2d(64, 128, 4, 2, 1, bias=False),
+      spectral_norm(nn.Conv2d(64, 128, 4, 2, 1, bias=False)),
       nn.BatchNorm2d(128),
       nn.LeakyReLU(0.1, inplace=True),
-      nn.Conv2d(128, 1024, 7, bias=False),
+      #nn.Conv2d(128, 1024, 7, bias=False),
+      spectral_norm(nn.Conv2d(128, 1024, 7, bias=False)),
       nn.BatchNorm2d(1024),
       nn.LeakyReLU(0.1, inplace=True),
     )
@@ -29,7 +32,8 @@ class D(nn.Module):
     super(D, self).__init__()
 
     self.main = nn.Sequential(
-      nn.Conv2d(1024, 1, 1),
+      #nn.Conv2d(1024, 1, 1)
+      spectral_norm(nn.Conv2d(1024, 1, 1)),
       nn.Sigmoid()
     )
 
@@ -45,11 +49,16 @@ class Q(nn.Module):
     super(Q, self).__init__()
     self.opt = opt
     self.conv = nn.Conv2d(1024, 128, 1, bias=False)
+    #self.conv = spectral_norm( nn.Conv2d(1024, 128, 1, bias=False) )
     self.bn = nn.BatchNorm2d(128)
     self.lReLU = nn.LeakyReLU(0.1, inplace=True)
     self.conv_disc = nn.Conv2d(128, opt.ndiscrete  , 1)
+    #self.conv_disc = spectral_norm( nn.Conv2d(128, opt.ndiscrete  , 1))
     self.conv_mu = nn.Conv2d(128, 2, 1)
     self.conv_var = nn.Conv2d(128, 2, 1)
+    #self.conv_mu = spectral_norm( nn.Conv2d(128, 2, 1) )
+    #self.conv_var = spectral_norm( nn.Conv2d(128, 2, 1) )
+
 
   def forward(self, x):
 
